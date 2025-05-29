@@ -1,0 +1,655 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+
+// Espera o usuário pressionar Enter
+void waitForEnter() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF); // Limpa o buffer
+    printf("\nPressione Enter para continuar...");
+    getchar(); // Espera pelo Enter
+}
+
+// Limpa a tela no Windows ou Linux
+void clearScreen() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+// Função para inicializar a Vila
+void inicializarVila(char VILA[10][10]) {
+    char temp[10][10] = {
+        {'*', '*', '*', '*', '*', '*', '*', '*', '*', '*'},
+        {'*', '@', ' ', ' ', ' ', ' ', '*', '.', '*', '*'},
+        {'*', ' ', ' ', ' ', ' ', ' ', '*', ' ', '*', '*'},
+        {'*', ' ', ' ', ' ', ' ', ' ', '*', 'D', '*', '*'},
+        {'*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+        {'*', 'P', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+        {'*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+        {'*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+        {'*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+        {'*', '*', '*', '*', '*', '*', '*', '*', '*', '*'}
+    };
+    for (int i = 0; i < 10; i++)
+        for (int j = 0; j < 10; j++)
+            VILA[i][j] = temp[i][j];
+}
+
+// Função para inicializar a Fase 1
+void inicializarFase1(char FASE1[10][10]) {
+    char temp[10][10] = {
+        {'*', '*', '*', '*', '*', '*', '*', '*', '*', '*'},
+        {'*', '@', ' ', ' ', ' ', '*', ' ', ' ', ' ', '*'},
+        {'*', ' ', ' ', ' ', ' ', '*', ' ', '*', ' ', '*'},
+        {'*', ' ', ' ', ' ', ' ', '*', ' ', '*', ' ', '*'},
+        {'*', ' ', ' ', ' ', ' ', '*', ' ', '*', ' ', '*'},
+        {'*', 'P', ' ', ' ', ' ', '*', ' ', '*', ' ', '*'},
+        {'*', ' ', ' ', ' ', ' ', '*', '.', '*', ' ', '*'},
+        {'*', ' ', ' ', ' ', ' ', '*', '*', '*', ' ', '*'},
+        {'*', ' ', ' ', ' ', ' ', 'D', ' ', ' ', ' ', '*'},
+        {'*', '*', '*', '*', '*', '*', '*', '*', '*', '*'}
+    };
+    for (int i = 0; i < 10; i++)
+        for (int j = 0; j < 10; j++)
+            FASE1[i][j] = temp[i][j];
+}
+
+// Função para inicializar a Fase 2
+void inicializarFase2(char FASE2[20][20]) {
+    char temp[20][20] = {
+        {'*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*'},
+        {'*', '&', ' ', ' ', '#', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', '*'},
+        {'*', ' ', '#', ' ', '#', ' ', '#', '#', ' ', '#', ' ', '#', '#', ' ', '#', ' ', '#', '#', ' ', '*'},
+        {'*', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+        {'*', ' ', '#', '#', '#', '#', '#', ' ', '#', '#', '#', '#', '#', ' ', '#', '#', '#', ' ', '#', '*'},
+        {'*', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+        {'*', '#', '#', '#', ' ', '#', '#', '#', '#', ' ', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', '*'},
+        {'*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', '*'},
+        {'*', ' ', '#', '#', '#', ' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', '#', '*'},
+        {'*', ' ', ' ', ' ', '#', ' ', '#', ' ', ' ', ' ', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+        {'*', '#', '#', ' ', '#', ' ', '#', ' ', '#', '#', '#', '#', '#', ' ', '#', '#', '#', ' ', '#', '*'},
+        {'*', 'O', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'D', '@', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+        {'*', ' ', '#', '#', '#', '#', '#', ' ', '#', '#', '#', '#', '#', ' ', '#', '#', '#', ' ', '#', '*'},
+        {'*', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+        {'*', '#', '#', '#', ' ', '#', '#', '#', '#', ' ', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', '*'},
+        {'*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', '*'},
+        {'*', ' ', '#', '#', '#', ' ', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', ' ', '#', ' ', 'P', '*'},
+        {'*', ' ', ' ', ' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', '#', '#', '*'},
+        {'*', ' ', '#', ' ', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', ' ', '#', '#', ' ', 'D', '.', '*'},
+        {'*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*'}
+            };
+    for (int i = 0; i < 20; i++)
+        for (int j = 0; j < 20; j++)
+            FASE2[i][j] = temp[i][j];
+}
+
+// Função para inicializar a Fase 3
+void inicializarFase3(char fase3[41][41]) {
+    char temp[41][41] = {
+        "****************************************",
+        "*        *      #   #   #   #   #    # *",
+        "*       >*@   #   #   #   #   #   #   >*",
+        "****************************************",
+        "*     O                        O       *",
+        "*    ***                     ***       *",
+        "*    * *********************** *       *",
+        "*    ***          *          ***       *",
+        "*       *         *         *          *",
+        "*        *       ***       *           *",
+        "*         *******   *******            *",
+        "*          *     ***     *             *",
+        "*           *     *                    *",
+        "*            *    *    *               *",
+        "*             *  ***  *                *",
+        "*              *** ***                 *",
+        "*                ***                   *",
+        "*                O                     *",
+        "*                                      *",
+        "*                                      *",
+        "* O                                    *",
+        "****************************************",
+        "*                                      *",
+        "*                                      *",
+        "*       #                        #     *",
+        "*      ###           #          ###    *",
+        "*       #           ###          #     *",
+        "*                    #                 *",
+        "*                                      *",
+        "*               #                      *",
+        "*              ###                     *",
+        "*               #                      *",
+        "*                       #              *",
+        "*                      ###             *",
+        "*                       #              *",
+        "*                               ********",
+        "*             #                 *      *",
+        "*            ###                D  F   *",
+        "****************************************"
+    };
+    for (int i = 0; i < 40; i++)
+        for (int j = 0; j < 40; j++)
+            fase3[i][j] = temp[i][j];
+}
+
+        // Vila
+int jogarVila() {
+    char VILA[10][10];
+    inicializarVila(VILA);
+    int x = 5, y = 5;
+    int p_x = 1, p_y = 5;
+    int c_x = 1, c_y = 1;
+    int porta_x = 7, porta_y = 3;
+    int porta_de_saidaX = 7, porta_de_saidaY = 1;
+    char c;
+
+    while (1) {
+        VILA[y][x] = '&';
+        VILA[p_y][p_x] = 'P';
+        VILA[c_y][c_x] = (VILA[c_y][c_x] == ' ') ? ' ' : '@';
+        VILA[porta_y][porta_x] = (VILA[porta_y][porta_x] == '=') ? '=' : 'D';
+
+        clearScreen();
+        printf("  |Vila|\n");
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) printf("%c ", VILA[i][j]);
+            printf("\n");
+        }
+
+        scanf(" %c", &c);
+        while (getchar() != '\n');
+        VILA[y][x] = ' ';
+
+        int next_x = x, next_y = y;
+        if (c == 'w' && y > 0 && VILA[y - 1][x] != '*' && VILA[y - 1][x] != 'P' && VILA[y - 1][x] != '@' && VILA[y - 1][x] != 'D') next_y--;
+        else if (c == 's' && y < 9 && VILA[y + 1][x] != '*' && VILA[y + 1][x] != 'P' && VILA[y + 1][x] != '@' && VILA[y + 1][x] != 'D') next_y++;
+        else if (c == 'a' && x > 0 && VILA[y][x - 1] != '*' && VILA[y][x - 1] != 'P' && VILA[y][x - 1] != '@' && VILA[y][x - 1] != 'D') next_x--;
+        else if (c == 'd' && x < 9 && VILA[y][x + 1] != '*' && VILA[y][x + 1] != 'P' && VILA[y][x + 1] != '@' && VILA[y][x + 1] != 'D') next_x++;
+
+        x = next_x;
+        y = next_y;
+
+        if (c == 'i' && abs(x - p_x) + abs(y - p_y) <= 1) {
+            printf("\nNPC:\n");
+            printf(" _________________________________________________________\n");
+            printf("|                                                         |\n");
+            printf("|Bravo guerreiro, pegue a chave (@) para abrir a porta(D)!|\n");
+            printf("|_________________________________________________________|\n");
+            waitForEnter();
+        }
+
+        if (c == 'i' && abs(x - c_x) + abs(y - c_y) <= 1) {
+            printf("\n ________________________________________\n");
+            printf("|                                        |\n");
+            printf("|           Voce pegou a chave!          |\n");
+            printf("|________________________________________|\n");
+            waitForEnter();
+            VILA[c_y][c_x] = ' ';
+            VILA[porta_y][porta_x] = '=';
+        }
+
+        if (x == porta_de_saidaX && y == porta_de_saidaY) {
+            clearScreen();
+ 
+            return 1; // Vitória
+        }
+    }
+}
+
+        //Fase 1
+int jogarFase1() {
+    char FASE1[10][10];
+    inicializarFase1(FASE1);
+    int x = 1, y = 7;
+    int p_x = 1, p_y = 5;
+    int c_x = 1, c_y = 1;
+    int porta_x = 5, porta_y = 8;
+    int porta_de_saidaX = 6, porta_de_saidaY = 6;
+    char c;
+
+    while (1) {
+        FASE1[y][x] = '&';
+        FASE1[p_y][p_x] = 'P';
+        FASE1[c_y][c_x] = (FASE1[c_y][c_x] == ' ') ? ' ' : '@';
+        FASE1[porta_y][porta_x] = (FASE1[porta_y][porta_x] == '=') ? '=' : 'D';
+
+        clearScreen();
+        printf("  |Fase 1|\n");
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) printf("%c ", FASE1[i][j]);
+            printf("\n");
+        }
+
+        scanf(" %c", &c);
+        while (getchar() != '\n');
+        FASE1[y][x] = ' ';
+
+        int next_x = x, next_y = y;
+        if (c == 'w' && y > 0 && FASE1[y - 1][x] != '*' && FASE1[y - 1][x] != 'P' && FASE1[y - 1][x] != '@' && FASE1[y - 1][x] != 'D') next_y--;
+        else if (c == 's' && y < 9 && FASE1[y + 1][x] != '*' && FASE1[y + 1][x] != 'P' && FASE1[y + 1][x] != '@' && FASE1[y + 1][x] != 'D') next_y++;
+        else if (c == 'a' && x > 0 && FASE1[y][x - 1] != '*' && FASE1[y][x - 1] != 'P' && FASE1[y][x - 1] != '@' && FASE1[y][x - 1] != 'D') next_x--;
+        else if (c == 'd' && x < 9 && FASE1[y][x + 1] != '*' && FASE1[y][x + 1] != 'P' && FASE1[y][x + 1] != '@' && FASE1[y][x + 1] != 'D') next_x++;
+
+        x = next_x;
+        y = next_y;
+
+        if (c == 'i' && abs(x - p_x) + abs(y - p_y) <= 1) {
+            printf("\nNPC:\n");
+            printf(" _________________________________________________________\n");
+            printf("|                                                         |\n");
+            printf("|         Pegue a chave (@) para abrir a porta(D)!        |\n");
+            printf("|_________________________________________________________|\n");
+            waitForEnter();
+        }
+
+        if (c == 'i' && abs(x - c_x) + abs(y - c_y) <= 1) {
+            printf("\n ________________________________________\n");
+            printf("|                                        |\n");
+            printf("|           Voce pegou a chave!          |\n");
+            printf("|________________________________________|\n");
+            waitForEnter();
+            FASE1[c_y][c_x] = ' ';
+            FASE1[porta_y][porta_x] = '=';
+        }
+
+        if (x == porta_de_saidaX && y == porta_de_saidaY) {
+            clearScreen();
+            return 1; // Vitória
+        }
+    }
+}
+
+        // fase2
+    int jogarFase2() {
+    char FASE2[20][20];
+    inicializarFase2(FASE2);
+    int botao_fase2x = 1, botao_fase2y = 11;
+    int porta2x = 9, porta2y = 11;
+    int x = 1, y = 1;
+    int p_x = 18, p_y = 16;
+    int c_x = 10, c_y = 11;
+    int porta_x = 17, porta_y = 18;
+    int porta_de_saidaX = 18, porta_de_saidaY = 18;
+    int inimigoX = 5, inimigoY = 3;
+    char c;
+
+    while (1) {
+        // Restaurar objetos fixos
+        FASE2[botao_fase2y][botao_fase2x] = (FASE2[botao_fase2y][botao_fase2x] == ' ') ? ' ' : 'O';
+        FASE2[porta2y][porta2x] = (FASE2[porta2y][porta2x] == '=') ? '=' : 'D';
+        FASE2[p_y][p_x] = 'P';
+        FASE2[c_y][c_x] = (FASE2[c_y][c_x] == ' ') ? ' ' : '@';
+        FASE2[porta_y][porta_x] = (FASE2[porta_y][porta_x] == '=') ? '=' : 'D';
+        if (FASE2[y][x] != '#') FASE2[y][x] = '&';
+        if (FASE2[inimigoY][inimigoX] != '#') FASE2[inimigoY][inimigoX] = 'X';
+
+        clearScreen();
+        printf("  |Fase 2|\n");
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) printf("%c ", FASE2[i][j]);
+            printf("\n");
+        }
+
+        scanf(" %c", &c);
+        while (getchar() != '\n');
+        FASE2[y][x] = ' ';
+        FASE2[inimigoY][inimigoX] = ' ';
+
+        int next_x = x, next_y = y;
+        if (c == 'w' && y > 0 && FASE2[y - 1][x] != '*' && FASE2[y - 1][x] != 'P' && FASE2[y - 1][x] != '@' && FASE2[y - 1][x] != 'D') next_y--;
+        else if (c == 's' && y < 19 && FASE2[y + 1][x] != '*' && FASE2[y + 1][x] != 'P' && FASE2[y + 1][x] != '@' && FASE2[y + 1][x] != 'D') next_y++;
+        else if (c == 'a' && x > 0 && FASE2[y][x - 1] != '*' && FASE2[y][x - 1] != 'P' && FASE2[y][x - 1] != '@' && FASE2[y][x - 1] != 'D') next_x--;
+        else if (c == 'd' && x < 19 && FASE2[y][x + 1] != '*' && FASE2[y][x + 1] != 'P' && FASE2[y][x + 1] != '@' && FASE2[y][x + 1] != 'D') next_x++;
+
+        // Verificar colisão com espinhos
+        if (FASE2[next_y][next_x] == '#') {
+            clearScreen();
+            printf(" ____________________\n");
+            printf("|                    |\n");
+            printf("|  TOCOU NOS ESPINHOS|\n");
+            printf("|     GAME OVER      |\n");
+            printf("|                    |\n");
+            printf("|____________________|\n");
+            printf("\nPressione Enter para voltar ao menu principal...\n");
+            waitForEnter();
+            return 0; // Morte
+        }
+
+        // Verificar colisão com inimigo
+        if (next_x == inimigoX && next_y == inimigoY) {
+            clearScreen();
+            printf(" ____________________\n");
+            printf("|                    |\n");
+            printf("|  TOCOU UM INIMIGO  |\n");
+            printf("|     GAME OVER      |\n");
+            printf("|                    |\n");
+            printf("|____________________|\n");
+            printf("\nPressione Enter para voltar ao menu principal...\n");
+            waitForEnter();
+            return 0; // Morte
+        }
+
+        x = next_x;
+        y = next_y;
+
+        if (c == 'i' && abs(x - p_x) + abs(y - p_y) <= 1) {
+            printf("\nNPC:\n");
+            printf(" _________________________________________________________\n");
+            printf("|                                                         |\n");
+            printf("| ESSES ESPINHOS DOEM MUITO , PROSIGA SEM MIM             |\n");
+            printf("|_________________________________________________________|\n");
+            waitForEnter();
+        }
+
+        if (c == 'i' && abs(x - botao_fase2x) + abs(y - botao_fase2y) <= 1) {
+            printf("\n ________________________________________\n");
+            printf("|                                        |\n");
+            printf("|           Voce abriu uma porta!        |\n");
+            printf("|________________________________________|\n");
+            waitForEnter();
+            FASE2[porta2y][porta2x] = '=';
+            FASE2[botao_fase2y][botao_fase2x] = ' ';
+        }
+
+        if (c == 'i' && abs(x - c_x) + abs(y - c_y) <= 1) {
+            printf("\n ________________________________________\n");
+            printf("|                                        |\n");
+            printf("|           Voce pegou a chave!          |\n");
+            printf("|________________________________________|\n");
+            waitForEnter();
+            FASE2[c_y][c_x] = ' ';
+            FASE2[porta_y][porta_x] = '=';
+        }
+
+        int novoY = inimigoY + (-1 + rand() % 3);
+        int novoX = inimigoX + (-1 + rand() % 3);
+        if (novoY >= 0 && novoY < 20 && novoX >= 0 && novoX < 20 &&
+            FASE2[novoY][novoX] != '*' && FASE2[novoY][novoX] != '&' &&
+            FASE2[novoY][novoX] != 'P' && FASE2[novoY][novoX] != '@' &&
+            FASE2[novoY][novoX] != 'D' && FASE2[novoY][novoX] != '=' &&
+            FASE2[novoY][novoX] != '#') {
+            inimigoY = novoY;
+            inimigoX = novoX;
+        }
+
+        if (x == inimigoX && y == inimigoY) {
+            clearScreen();
+            printf(" ____________________\n");
+            printf("|                    |\n");
+            printf("|  TOCOU UM INIMIGO  |\n");
+            printf("|     GAME OVER      |\n");
+            printf("|                    |\n");
+            printf("|____________________|\n");
+            printf("\nPressione Enter para voltar ao menu principal...\n");
+            waitForEnter();
+            return 0; // Morte
+        }
+
+        if (x == porta_de_saidaX && y == porta_de_saidaY) {
+            clearScreen();
+
+            return 1; // Vitória
+        }
+    }
+}
+
+            //fase3
+int jogarFase3() {
+    char fase3[41][41];
+    inicializarFase3(fase3);
+    int x = 3, y = 2;
+    int c_x = 11, c_y = 3;
+    int porta_x = 32, porta_y = 37;
+    int inimigo1X = 32, inimigo1Y = 30;
+    int inimigo2X = 28, inimigo2Y = 24;
+    int inimigo3X = 5, inimigo3Y = 30;
+    int inimigo4X = 9, inimigo4Y = 34;
+    int inimigo5X = 28, inimigo5Y = 35;
+    int inimigo1VX = 25, inimigo1VY = 20;
+    int inimigo2VX = 25, inimigo2VY = 20;
+    int inimigo3VX = 25, inimigo3VY = 20;
+    char c;
+
+    while (1) {
+        // Restaurar objetos fixos
+        fase3[4][6] = 'O';
+        fase3[17][17] = 'O';
+        fase3[4][31] = 'O';
+        fase3[20][2] = 'O';
+        fase3[37][2] = 'O';
+        fase3[c_y][c_x] = (fase3[c_y][c_x] == ' ') ? ' ' : '@';
+        fase3[porta_y][porta_x] = (fase3[porta_y][porta_x] == '=') ? '=' : 'D';
+        if (fase3[inimigo1Y][inimigo1X] != '#') fase3[inimigo1Y][inimigo1X] = 'X';
+        if (fase3[inimigo2Y][inimigo2X] != '#') fase3[inimigo2Y][inimigo2X] = 'X';
+        if (fase3[inimigo3Y][inimigo3X] != '#') fase3[inimigo3Y][inimigo3X] = 'X';
+        if (fase3[inimigo4Y][inimigo4X] != '#') fase3[inimigo4Y][inimigo4X] = 'X';
+        if (fase3[inimigo5Y][inimigo5X] != '#') fase3[inimigo5Y][inimigo5X] = 'X';
+        if (fase3[inimigo1VY][inimigo1VX] != '#') fase3[inimigo1VY][inimigo1VX] = 'V';
+        if (fase3[inimigo2VY][inimigo2VX] != '#') fase3[inimigo2VY][inimigo2VX] = 'V';
+        if (fase3[inimigo3VY][inimigo3VX] != '#') fase3[inimigo3VY][inimigo3VX] = 'V';
+        if (fase3[y][x] != '#') fase3[y][x] = '&';
+
+        clearScreen();
+        printf("  |Fase 3|\n");
+        for (int i = 0; i < 40; i++) {
+            for (int j = 0; j < 40; j++) printf("%c", fase3[i][j]);
+            printf("\n");
+        }
+
+        scanf(" %c", &c);
+        while (getchar() != '\n');
+        fase3[y][x] = ' ';
+        fase3[inimigo1Y][inimigo1X] = ' ';
+        fase3[inimigo2Y][inimigo2X] = ' ';
+        fase3[inimigo3Y][inimigo3X] = ' ';
+        fase3[inimigo4Y][inimigo4X] = ' ';
+        fase3[inimigo5Y][inimigo5X] = ' ';
+        fase3[inimigo1VY][inimigo1VX] = ' ';
+        fase3[inimigo2VY][inimigo2VX] = ' ';
+        fase3[inimigo3VY][inimigo3VX] = ' ';
+
+        int next_x = x, next_y = y;
+        if (c == 'w' && y > 1 && fase3[y - 1][x] != '*' && fase3[y - 1][x] != '@' && fase3[y - 1][x] != 'D') next_y--;
+        else if (c == 's' && y < 39 && fase3[y + 1][x] != '*' && fase3[y + 1][x] != '@' && fase3[y + 1][x] != 'D') next_y++;
+        else if (c == 'a' && x > 1 && fase3[y][x - 1] != '*' && fase3[y][x - 1] != '@' && fase3[y][x - 1] != 'D') next_x--;
+        else if (c == 'd' && x < 39 && fase3[y][x + 1] != '*' && fase3[y][x + 1] != '@' && fase3[y][x + 1] != 'D') next_x++;
+
+        if (fase3[next_y][next_x] == '#') {
+            clearScreen();
+            printf(" ____________________\n");
+            printf("|                    |\n");
+            printf("|  TOCOU NOS ESPINHOS|\n");
+            printf("|     GAME OVER      |\n");
+            printf("|                    |\n");
+            printf("|____________________|\n");
+            printf("\nPressione Enter para voltar ao menu principal...\n");
+            waitForEnter();
+            return 0; // Morte
+        }
+
+        if ((next_x == inimigo1X && next_y == inimigo1Y) ||
+            (next_x == inimigo2X && next_y == inimigo2Y) ||
+            (next_x == inimigo3X && next_y == inimigo3Y) ||
+            (next_x == inimigo4X && next_y == inimigo4Y) ||
+            (next_x == inimigo5X && next_y == inimigo5Y) ||
+            (next_x == inimigo1VX && next_y == inimigo1VY) ||
+            (next_x == inimigo2VX && next_y == inimigo2VY) ||
+            (next_x == inimigo3VX && next_y == inimigo3VY)) {
+            clearScreen();
+            printf(" ____________________\n");
+            printf("|                    |\n");
+            printf("|  TOCOU UM INIMIGO  |\n");
+            printf("|     GAME OVER      |\n");
+            printf("|                    |\n");
+            printf("|____________________|\n");
+            printf("\nPressione Enter para voltar ao menu principal...\n");
+            waitForEnter();
+            return 0; // Morte
+        }
+
+        x = next_x;
+        y = next_y;
+
+        if (fase3[y][x] == '>') {
+            fase3[y][x] = '>';
+            x = 37;
+            y = 2;
+        }
+
+        if (c == 'i' && abs(x - c_x) + abs(y - c_y) <= 1) {
+            printf("\n ________________________________________\n");
+            printf("|                                        |\n");
+            printf("|           Voce pegou a chave!          |\n");
+            printf("|________________________________________|\n");
+            waitForEnter();
+            fase3[c_y][c_x] = ' ';
+            fase3[porta_y][porta_x] = '=';
+        }
+
+        if (fase3[4][6] == ' ' && c == 'i') {
+            fase3[6][6] = 'L';
+        }
+        if (fase3[4][31] == ' ' && c == 'i') {
+            fase3[15][18] = 'L';
+        }
+        if (fase3[17][17] == ' ' && c == 'i') {
+            fase3[6][30] = 'L';
+        }
+        if (fase3[20][2] == ' ' && c == 'i') {
+            fase3[10][18] = 'L';
+        }
+
+        if (fase3[6][6] == 'L' && fase3[15][18] == 'L' && fase3[6][30] == 'L' && fase3[10][18] == 'L') {
+            fase3[21][3] = ' ';
+            fase3[21][4] = ' ';
+            fase3[21][5] = ' ';
+            fase3[21][6] = ' ';
+        }
+
+        // Movimento dos inimigos X
+        int direcao1 = rand() % 4;
+        if (direcao1 == 0 && inimigo1Y > 1 && fase3[inimigo1Y - 1][inimigo1X] != '*' && fase3[inimigo1Y - 1][inimigo1X] != '&' && fase3[inimigo1Y - 1][inimigo1X] != '@' && fase3[inimigo1Y - 1][inimigo1X] != 'D' && fase3[inimigo1Y - 1][inimigo1X] != '=' && fase3[inimigo1Y - 1][inimigo1X] != 'O' && fase3[inimigo1Y - 1][inimigo1X] != '<' && fase3[inimigo1Y - 1][inimigo1X] != '>' && fase3[inimigo1Y - 1][inimigo1X] != '#') inimigo1Y--;
+        else if (direcao1 == 1 && inimigo1Y < 39 && fase3[inimigo1Y + 1][inimigo1X] != '*' && fase3[inimigo1Y + 1][inimigo1X] != '&' && fase3[inimigo1Y + 1][inimigo1X] != '@' && fase3[inimigo1Y + 1][inimigo1X] != 'D' && fase3[inimigo1Y + 1][inimigo1X] != '=' && fase3[inimigo1Y + 1][inimigo1X] != 'O' && fase3[inimigo1Y + 1][inimigo1X] != '<' && fase3[inimigo1Y + 1][inimigo1X] != '>' && fase3[inimigo1Y + 1][inimigo1X] != '#') inimigo1Y++;
+        else if (direcao1 == 2 && inimigo1X > 1 && fase3[inimigo1Y][inimigo1X - 1] != '*' && fase3[inimigo1Y][inimigo1X - 1] != '&' && fase3[inimigo1Y][inimigo1X - 1] != '@' && fase3[inimigo1Y][inimigo1X - 1] != 'D' && fase3[inimigo1Y][inimigo1X - 1] != '=' && fase3[inimigo1Y][inimigo1X - 1] != 'O' && fase3[inimigo1Y][inimigo1X - 1] != '<' && fase3[inimigo1Y][inimigo1X - 1] != '>' && fase3[inimigo1Y][inimigo1X - 1] != '#') inimigo1X--;
+        else if (direcao1 == 3 && inimigo1X < 39 && fase3[inimigo1Y][inimigo1X + 1] != '*' && fase3[inimigo1Y][inimigo1X + 1] != '&' && fase3[inimigo1Y][inimigo1X + 1] != '@' && fase3[inimigo1Y][inimigo1X + 1] != 'D' && fase3[inimigo1Y][inimigo1X + 1] != '=' && fase3[inimigo1Y][inimigo1X + 1] != 'O' && fase3[inimigo1Y][inimigo1X + 1] != '<' && fase3[inimigo1Y][inimigo1X + 1] != '>' && fase3[inimigo1Y][inimigo1X + 1] != '#') inimigo1X++;
+
+        int direcao2 = rand() % 4;
+        if (direcao2 == 0 && inimigo2Y > 1 && fase3[inimigo2Y - 1][inimigo2X] != '*' && fase3[inimigo2Y - 1][inimigo2X] != '&' && fase3[inimigo2Y - 1][inimigo2X] != '@' && fase3[inimigo2Y - 1][inimigo2X] != 'D' && fase3[inimigo2Y - 1][inimigo2X] != '=' && fase3[inimigo2Y - 1][inimigo2X] != 'O' && fase3[inimigo2Y - 1][inimigo2X] != '<' && fase3[inimigo2Y - 1][inimigo2X] != '>' && fase3[inimigo2Y - 1][inimigo2X] != '#') inimigo2Y--;
+        else if (direcao2 == 1 && inimigo2Y < 39 && fase3[inimigo2Y + 1][inimigo2X] != '*' && fase3[inimigo2Y + 1][inimigo2X] != '&' && fase3[inimigo2Y + 1][inimigo2X] != '@' && fase3[inimigo2Y + 1][inimigo2X] != 'D' && fase3[inimigo2Y + 1][inimigo2X] != '=' && fase3[inimigo2Y + 1][inimigo2X] != 'O' && fase3[inimigo2Y + 1][inimigo2X] != '<' && fase3[inimigo2Y + 1][inimigo2X] != '>' && fase3[inimigo2Y + 1][inimigo2X] != '#') inimigo2Y++;
+        else if (direcao2 == 2 && inimigo2X > 1 && fase3[inimigo2Y][inimigo2X - 1] != '*' && fase3[inimigo2Y][inimigo2X - 1] != '&' && fase3[inimigo2Y][inimigo2X - 1] != '@' && fase3[inimigo2Y][inimigo2X - 1] != 'D' && fase3[inimigo2Y][inimigo2X - 1] != '=' && fase3[inimigo2Y][inimigo2X - 1] != 'O' && fase3[inimigo2Y][inimigo2X - 1] != '<' && fase3[inimigo2Y][inimigo2X - 1] != '>' && fase3[inimigo2Y][inimigo2X - 1] != '#') inimigo2X--;
+        else if (direcao2 == 3 && inimigo2X < 39 && fase3[inimigo2Y][inimigo2X + 1] != '*' && fase3[inimigo2Y][inimigo2X + 1] != '&' && fase3[inimigo2Y][inimigo2X + 1] != '@' && fase3[inimigo2Y][inimigo2X + 1] != 'D' && fase3[inimigo2Y][inimigo2X + 1] != '=' && fase3[inimigo2Y][inimigo2X + 1] != 'O' && fase3[inimigo2Y][inimigo2X + 1] != '<' && fase3[inimigo2Y][inimigo2X + 1] != '>' && fase3[inimigo2Y][inimigo2X + 1] != '#') inimigo2X++;
+
+        int direcao3 = rand() % 4;
+        if (direcao3 == 0 && inimigo3Y > 1 && fase3[inimigo3Y - 1][inimigo3X] != '*' && fase3[inimigo3Y - 1][inimigo3X] != '&' && fase3[inimigo3Y - 1][inimigo3X] != '@' && fase3[inimigo3Y - 1][inimigo3X] != 'D' && fase3[inimigo3Y - 1][inimigo3X] != '=' && fase3[inimigo3Y - 1][inimigo3X] != 'O' && fase3[inimigo3Y - 1][inimigo3X] != '<' && fase3[inimigo3Y - 1][inimigo3X] != '>' && fase3[inimigo3Y - 1][inimigo3X] != '#') inimigo3Y--;
+        else if (direcao3 == 1 && inimigo3Y < 39 && fase3[inimigo3Y + 1][inimigo3X] != '*' && fase3[inimigo3Y + 1][inimigo3X] != '&' && fase3[inimigo3Y + 1][inimigo3X] != '@' && fase3[inimigo3Y + 1][inimigo3X] != 'D' && fase3[inimigo3Y + 1][inimigo3X] != '=' && fase3[inimigo3Y + 1][inimigo3X] != 'O' && fase3[inimigo3Y + 1][inimigo3X] != '<' && fase3[inimigo3Y + 1][inimigo3X] != '>' && fase3[inimigo3Y + 1][inimigo3X] != '#') inimigo3Y++;
+        else if (direcao3 == 2 && inimigo3X > 1 && fase3[inimigo3Y][inimigo3X - 1] != '*' && fase3[inimigo3Y][inimigo3X - 1] != '&' && fase3[inimigo3Y][inimigo3X - 1] != '@' && fase3[inimigo3Y][inimigo3X - 1] != 'D' && fase3[inimigo3Y][inimigo3X - 1] != '=' && fase3[inimigo3Y][inimigo3X - 1] != 'O' && fase3[inimigo3Y][inimigo3X - 1] != '<' && fase3[inimigo3Y][inimigo3X - 1] != '>' && fase3[inimigo3Y][inimigo3X - 1] != '#') inimigo3X--;
+        else if (direcao3 == 3 && inimigo3X < 39 && fase3[inimigo3Y][inimigo3X + 1] != '*' && fase3[inimigo3Y][inimigo3X + 1] != '&' && fase3[inimigo3Y][inimigo3X + 1] != '@' && fase3[inimigo3Y][inimigo3X + 1] != 'D' && fase3[inimigo3Y][inimigo3X + 1] != '=' && fase3[inimigo3Y][inimigo3X + 1] != 'O' && fase3[inimigo3Y][inimigo3X + 1] != '<' && fase3[inimigo3Y][inimigo3X + 1] != '>' && fase3[inimigo3Y][inimigo3X + 1] != '#') inimigo3X++;
+
+        int direcao4 = rand() % 4;
+        if (direcao4 == 0 && inimigo4Y > 1 && fase3[inimigo4Y - 1][inimigo4X] != '*' && fase3[inimigo4Y - 1][inimigo4X] != '&' && fase3[inimigo4Y - 1][inimigo4X] != '@' && fase3[inimigo4Y - 1][inimigo4X] != 'D' && fase3[inimigo4Y - 1][inimigo4X] != '=' && fase3[inimigo4Y - 1][inimigo4X] != 'O' && fase3[inimigo4Y - 1][inimigo4X] != '<' && fase3[inimigo4Y - 1][inimigo4X] != '>' && fase3[inimigo4Y - 1][inimigo4X] != '#') inimigo4Y--;
+        else if (direcao4 == 1 && inimigo4Y < 39 && fase3[inimigo4Y + 1][inimigo4X] != '*' && fase3[inimigo4Y + 1][inimigo4X] != '&' && fase3[inimigo4Y + 1][inimigo4X] != '@' && fase3[inimigo4Y + 1][inimigo4X] != 'D' && fase3[inimigo4Y + 1][inimigo4X] != '=' && fase3[inimigo4Y + 1][inimigo4X] != 'O' && fase3[inimigo4Y + 1][inimigo4X] != '<' && fase3[inimigo4Y + 1][inimigo4X] != '>' && fase3[inimigo4Y + 1][inimigo4X] != '#') inimigo4Y++;
+        else if (direcao4 == 2 && inimigo4X > 1 && fase3[inimigo4Y][inimigo4X - 1] != '*' && fase3[inimigo4Y][inimigo4X - 1] != '&' && fase3[inimigo4Y][inimigo4X - 1] != '@' && fase3[inimigo4Y][inimigo4X - 1] != 'D' && fase3[inimigo4Y][inimigo4X - 1] != '=' && fase3[inimigo4Y][inimigo4X - 1] != 'O' && fase3[inimigo4Y][inimigo4X - 1] != '<' && fase3[inimigo4Y][inimigo4X - 1] != '>' && fase3[inimigo4Y][inimigo4X - 1] != '#') inimigo4X--;
+        else if (direcao4 == 3 && inimigo4X < 39 && fase3[inimigo4Y][inimigo4X + 1] != '*' && fase3[inimigo4Y][inimigo4X + 1] != '&' && fase3[inimigo4Y][inimigo4X + 1] != '@' && fase3[inimigo4Y][inimigo4X + 1] != 'D' && fase3[inimigo4Y][inimigo4X + 1] != '=' && fase3[inimigo4Y][inimigo4X + 1] != 'O' && fase3[inimigo4Y][inimigo4X + 1] != '<' && fase3[inimigo4Y][inimigo4X + 1] != '>' && fase3[inimigo4Y][inimigo4X + 1] != '#') inimigo4X++;
+
+        int direcao5 = rand() % 4;
+        if (direcao5 == 0 && inimigo5Y > 1 && fase3[inimigo5Y - 1][inimigo5X] != '*' && fase3[inimigo5Y - 1][inimigo5X] != '&' && fase3[inimigo5Y - 1][inimigo5X] != '@' && fase3[inimigo5Y - 1][inimigo5X] != 'D' && fase3[inimigo5Y - 1][inimigo5X] != '=' && fase3[inimigo5Y - 1][inimigo5X] != 'O' && fase3[inimigo5Y - 1][inimigo5X] != '<' && fase3[inimigo5Y - 1][inimigo5X] != '>' && fase3[inimigo5Y - 1][inimigo5X] != '#') inimigo5Y--;
+        else if (direcao5 == 1 && inimigo5Y < 39 && fase3[inimigo5Y + 1][inimigo5X] != '*' && fase3[inimigo5Y + 1][inimigo5X] != '&' && fase3[inimigo5Y + 1][inimigo5X] != '@' && fase3[inimigo5Y + 1][inimigo5X] != 'D' && fase3[inimigo5Y + 1][inimigo5X] != '=' && fase3[inimigo5Y + 1][inimigo5X] != 'O' && fase3[inimigo5Y + 1][inimigo5X] != '<' && fase3[inimigo5Y + 1][inimigo5X] != '>' && fase3[inimigo5Y + 1][inimigo5X] != '#') inimigo5Y++;
+        else if (direcao5 == 2 && inimigo5X > 1 && fase3[inimigo5Y][inimigo5X - 1] != '*' && fase3[inimigo5Y][inimigo5X - 1] != '&' && fase3[inimigo5Y][inimigo5X - 1] != '@' && fase3[inimigo5Y][inimigo5X - 1] != 'D' && fase3[inimigo5Y][inimigo5X - 1] != '=' && fase3[inimigo5Y][inimigo5X - 1] != 'O' && fase3[inimigo5Y][inimigo5X - 1] != '<' && fase3[inimigo5Y][inimigo5X - 1] != '>' && fase3[inimigo5Y][inimigo5X - 1] != '#') inimigo5X--;
+        else if (direcao5 == 3 && inimigo5X < 39 && fase3[inimigo5Y][inimigo5X + 1] != '*' && fase3[inimigo5Y][inimigo5X + 1] != '&' && fase3[inimigo5Y][inimigo5X + 1] != '@' && fase3[inimigo5Y][inimigo5X + 1] != 'D' && fase3[inimigo5Y][inimigo5X + 1] != '=' && fase3[inimigo5Y][inimigo5X + 1] != 'O' && fase3[inimigo5Y][inimigo5X + 1] != '<' && fase3[inimigo5Y][inimigo5X + 1] != '>' && fase3[inimigo5Y][inimigo5X + 1] != '#') inimigo5X++;
+
+        // Movimento dos inimigos V
+        if (inimigo1VX < x && fase3[inimigo1VY][inimigo1VX + 1] != '*' && fase3[inimigo1VY][inimigo1VX + 1] != '#') inimigo1VX++;
+        else if (inimigo1VX > x && fase3[inimigo1VY][inimigo1VX - 1] != '*' && fase3[inimigo1VY][inimigo1VX - 1] != '#') inimigo1VX--;
+        if (inimigo1VY < y && fase3[inimigo1VY + 1][inimigo1VX] != '*' && fase3[inimigo1VY + 1][inimigo1VX] != '#') inimigo1VY++;
+        else if (inimigo1VY > y && fase3[inimigo1VY - 1][inimigo1VX] != '*' && fase3[inimigo1VY - 1][inimigo1VX] != '#') inimigo1VY--;
+
+        if (inimigo2VX < x && fase3[inimigo2VY][inimigo2VX + 1] != '*' && fase3[inimigo2VY][inimigo2VX + 1] != '#') inimigo2VX++;
+        else if (inimigo2VX > x && fase3[inimigo2VY][inimigo2VX - 1] != '*' && fase3[inimigo2VY][inimigo2VX - 1] != '#') inimigo2VX--;
+        if (inimigo2VY < y && fase3[inimigo2VY + 1][inimigo2VX] != '*' && fase3[inimigo2VY + 1][inimigo2VX] != '#') inimigo2VY++;
+        else if (inimigo2VY > y && fase3[inimigo2VY - 1][inimigo2VX] != '*' && fase3[inimigo2VY - 1][inimigo2VX] != '#') inimigo2VY--;
+
+        if (inimigo3VX < x && fase3[inimigo3VY][inimigo3VX + 1] != '*' && fase3[inimigo3VY][inimigo3VX + 1] != '#') inimigo3VX++;
+        else if (inimigo3VX > x && fase3[inimigo3VY][inimigo3VX - 1] != '*' && fase3[inimigo3VY][inimigo3VX - 1] != '#') inimigo3VX--;
+        if (inimigo3VY < y && fase3[inimigo3VY + 1][inimigo3VX] != '*' && fase3[inimigo3VY + 1][inimigo3VX] != '#') inimigo3VY++;
+        else if (inimigo3VY > y && fase3[inimigo3VY - 1][inimigo3VX] != '*' && fase3[inimigo3VY - 1][inimigo3VX] != '#') inimigo3VY--;
+        // Verificar colisão após movimento dos inimigos
+        if ((x == inimigo1X && y == inimigo1Y) ||
+            (x == inimigo2X && y == inimigo2Y) ||
+            (x == inimigo3X && y == inimigo3Y) ||
+            (x == inimigo4X && y == inimigo4Y) ||
+            (x == inimigo5X && y == inimigo5Y) ||
+            (x == inimigo1VX && y == inimigo1VY) ||
+            (x == inimigo2VX && y == inimigo2VY) ||
+            (x == inimigo3VX && y == inimigo3VY)) {
+            clearScreen();
+            printf(" ____________________\n");
+            printf("|                    |\n");
+            printf("|  TOCOU UM INIMIGO  |\n");
+            printf("|     GAME OVER      |\n");
+            printf("|                    |\n");
+            printf("|____________________|\n");
+            printf("\nPressione Enter para voltar ao menu principal...\n");
+            waitForEnter();
+            return 0; // Morte
+        }
+
+        if (x == porta_x && y == porta_y) {
+            clearScreen();
+            printf("Meus parabens! Voce acaba de virar o verdadeiro Crawler da Dungeon!");
+            return 1; // Vitória
+        }
+    }
+}
+
+int main() {
+    int op_menu = 0, op_creditos;
+    char c;
+    srand(time(NULL));
+
+    while (op_menu != 3) {
+        clearScreen();
+        printf(" _____________________\n");
+        printf("|///DUNGEON CRAWLER///|\n");
+        printf("|  (1) Jogar          |\n");
+        printf("|  (2) Creditos       |\n");
+        printf("|  (3) Sair           |\n");
+        printf("|_____________________|\n");
+
+        scanf("%d", &op_menu);
+        while ((c = getchar()) != '\n' && c != EOF);
+
+        if (op_menu == 1) {
+            
+            if (jogarVila() == 0) continue; 
+            if (jogarFase1() == 0) continue; 
+            if (jogarFase2() == 0) continue; 
+            if (jogarFase3() == 0) continue; 
+        } else if (op_menu == 2) {
+            clearScreen();
+            printf("/////CREDITOS/////\n");
+            printf("DEVS:\n");
+            printf("- Andre Felipe Ribeiro Fernandes\n");
+            printf("- Andre Luis Colares Marinho\n");
+            printf("- Diogo Pantoja Angelica\n\n");
+            printf("Aperte (1) para voltar ao menu\n");
+            scanf("%d", &op_creditos);
+            while (getchar() != '\n');
+            if (op_creditos != 1) {
+                printf("Opcao invalida! Tente novamente.\n");
+                waitForEnter();
+            }
+        } else if (op_menu == 3) {
+            printf("Saindo...\n");
+        } else {
+            printf("Opcao invalida! Tente novamente.\n");
+            waitForEnter();
+        }
+    }
+
+    clearScreen();
+    printf("Ate mais!\n");
+    return 0;
+}
